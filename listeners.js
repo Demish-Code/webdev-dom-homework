@@ -1,6 +1,6 @@
 import { comments } from "./comments.js";
 import { renderComments } from "./renderComments.js";
-import { formatDate } from "./formatDate.js";
+import { postCommentApi } from "./api.js";
 
 export function initLikeListeners() {
   const likeButtonElements = document.querySelectorAll(".like-button");
@@ -38,7 +38,7 @@ export function initCommentReplyListeners() {
   }
 }
 
-export function initFormListeners() {
+export function initFormListeners(fetchAndRenderComments) {
   const nameInputElement = document.querySelector(".add-form-name");
   const commentInputElement = document.querySelector(".add-form-text");
   const addButtonElement = document.querySelector(".add-form-button");
@@ -59,20 +59,12 @@ export function initFormListeners() {
       return;
     }
 
-    const currentDate = formatDate(new Date());
+    postCommentApi(trimmedName, trimmedComment).then(function () {
+      fetchAndRenderComments();
 
-    comments.push({
-      name: trimmedName,
-      date: currentDate,
-      text: trimmedComment,
-      likes: 0,
-      isLiked: false,
+      nameInputElement.value = "";
+      commentInputElement.value = "";
     });
-
-    renderComments();
-
-    nameInputElement.value = "";
-    commentInputElement.value = "";
   }
 
   function handleNameInput() {
